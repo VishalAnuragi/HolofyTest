@@ -1,8 +1,20 @@
 package com.example.holofytest
 
-data class VideoModal (
+import java.io.Serializable
 
-    var title :String ?= null,
-    var subtitle : String ?= null,
+class VideoModal : Serializable {
+    var title :String ?= null
+    var subtitle : String ?= null
     var videoURL : String ?= null
-)
+
+    constructor()
+    constructor(title: String?, subtitle: String?, videoURL: String?) {
+        this.title = title
+        this.subtitle = subtitle
+        this.videoURL = videoURL
+    }
+
+
+}
+
+
