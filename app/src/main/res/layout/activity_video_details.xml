@@ -17,6 +17,7 @@
     android:elevation="10dp" >
 
     <LinearLayout
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -55,7 +56,6 @@
 </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
-        android:transitionName="detailsTextCardTh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="10dp"
@@ -64,7 +64,6 @@
         android:layout_below="@+id/detailsCard">
 
         <TextView
-            android:transitionName="detailsTextTh"
             android:id="@+id/detailsText"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
