@@ -1,5 +1,6 @@
 package com.example.holofytest
 
+import android.media.MediaPlayer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,55 +8,61 @@ import android.widget.*
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 
-var callback2: VideoCallback?= null
-
-class VideoAdapter(videomodal: Array<VideoModal>, mainActivity: MainActivity) : RecyclerView.Adapter<VideoAdapter.videoviewholder>() {
-
-    var mdata: Array<VideoModal> = videomodal
-    val callback: VideoCallback?= mainActivity
-
-
-
+class VideoAdapter(mdata: List<VideoModal>, callback: VideoCallback) : RecyclerView.Adapter<VideoAdapter.videoviewholder>() {
+    var mdata: List<VideoModal>
+    var callback: VideoCallback
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): videoviewholder {
-        val view: View = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_videos, parent, false)
-        callback2 = callback
-
+        val view: View = LayoutInflater.from(parent.context).inflate(R.layout.item_videos, parent, false)
         return videoviewholder(view)
-
     }
 
     override fun onBindViewHolder(holder: videoviewholder, position: Int) {
 
+        holder.vidTitle.text = mdata.get(position).title
+        holder.vidSubTitle.text = mdata.get(position).subtitle
+
+        var vv = holder.vidVideo
+        vv.setVideoPath(mdata.get(position).videoURL.toString())
+        vv.setOnPreparedListener { mp -> setVolumeControl(mp) }
+        vv.start()
+
     }
 
-    override fun getItemCount(): Int {
-        return mdata!!.size
+    private fun setVolumeControl(mp: MediaPlayer?) {
+        mp!!.setVolume(0F, 0F)
     }
 
-    class videoviewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    override fun getItemCount(): Int { return mdata.size
+    }
 
+    inner class videoviewholder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var vidCard: CardView
+        var vidVideo: VideoView
+        var vidTitle: TextView
+        var vidSubTitle: TextView
 
         init {
-            val itemCard = itemView.findViewById<CardView>(R.id.itemCard)
-           // var linearLayout = itemView.findViewById<LinearLayout>(R.id.ll)
-            var itemVideo  = itemView.findViewById<VideoView>(R.id.itemVideo)
-            val itemTitle = itemView.findViewById<TextView>(R.id.itemTitle)
-            val itemSubTitle = itemView.findViewById<TextView>(R.id.itemSubTitle)
-
-            // itemVideo.start();
-
-            //  Log.i("TAG123S" , visibleItem.toString())
-            itemView.setOnClickListener { callback2!!.onVideoItemClick( adapterPosition ,
-                itemCard,
-              //  linearLayout,
-                itemVideo,
-                itemTitle,
-                itemSubTitle)
+            vidCard = itemView.findViewById(R.id.itemCard)
+            vidVideo = itemView.findViewById(R.id.itemVideo)
+            vidTitle = itemView.findViewById(R.id.itemTitle)
+            vidSubTitle = itemView.findViewById(R.id.itemSubTitle)
 
 
-            }
+            itemView.setOnClickListener {
+
+                callback!!.onVideoItemClick( adapterPosition ,
+                                                vidCard,
+                                                vidVideo,
+                                                vidTitle,
+                                                vidSubTitle)
+
             }
         }
     }
+
+    init {
+        this.mdata = mdata
+        this.callback = callback
+    }
+}

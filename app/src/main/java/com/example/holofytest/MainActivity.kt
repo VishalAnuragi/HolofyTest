@@ -19,114 +19,65 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.util.Pair;
+import java.util.ArrayList
 
 
 class MainActivity : AppCompatActivity() , VideoCallback {
 
     var videoRecycler : RecyclerView ?= null
-    val videomodal: Array<VideoModal> ?= null
+
     var videoAdapter : VideoAdapter ?= null
+    var videomodal: ArrayList<VideoModal> ?= null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        videoRecycler = findViewById(R.id.videoRecycler)
+        initmData()
         initRecycler()
+
+    }
+
+    private fun initmData() {
+
+        videomodal = ArrayList<VideoModal>()
+        videomodal!!.add(VideoModal("Bird Ronald", getString(R.string.video_details1)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.eggs))
+        videomodal!!.add(VideoModal("Blue Ball", getString(R.string.video_details2)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.ball))
+        videomodal!!.add(VideoModal("Bird Animation", getString(R.string.video_details1) ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.eggs))
+        videomodal!!.add(VideoModal("Ball Animation", getString(R.string.video_details2)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.ball))
+        videomodal!!.add(VideoModal("Video 1", getString(R.string.video_details1) ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.eggs))
+        videomodal!!.add(VideoModal("Video 2", getString(R.string.video_details2)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.ball))
 
     }
 
     public fun initRecycler() {
 
+        videoRecycler!!.setLayoutManager(LinearLayoutManager(this))
+        videoRecycler!!.setHasFixedSize(true)
 
-        val videomodal: Array<VideoModal> = arrayOf<VideoModal>(
-            VideoModal("Bird Ronald", getString(R.string.video_details1)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.eggs),
-            VideoModal("Blue Ball", getString(R.string.video_details2)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.ball),
-            VideoModal("Bird Animation", getString(R.string.video_details1) ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.eggs),
-            VideoModal("Ball Animation", getString(R.string.video_details2)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.ball),
-            VideoModal("Video 1", getString(R.string.video_details1) ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.eggs),
-            VideoModal("Video 2", getString(R.string.video_details2)  ,"android.resource://" + packageName + "/" + com.example.holofytest.R.raw.ball),
-        )
-
-        videoRecycler = findViewById(R.id.videoRecycler)
-        var llm : LinearLayoutManager = LinearLayoutManager( applicationContext , LinearLayoutManager.VERTICAL , false)
-        videoRecycler!!.layoutManager = llm
-
-        videoAdapter = VideoAdapter(videomodal , this)
+        videoAdapter = VideoAdapter(videomodal!!, this)
         videoRecycler!!.setAdapter(videoAdapter)
-        videoRecycler!!.hasFixedSize()
-
-        videoRecycler!!.adapter = videoAdapter
-        videoRecycler!!.itemAnimator = DefaultItemAnimator()
-
-
-
-        val myLayoutManager: LinearLayoutManager = videoRecycler!!.getLayoutManager() as LinearLayoutManager
-        val firstVisiblePosition = myLayoutManager.findFirstCompletelyVisibleItemPosition()
-
-       Log.i("TAG123S" , firstVisiblePosition.toString())
-
-        addScrollListener()
 
     }
 
-    private fun addScrollListener() {
-
-        videoRecycler!!.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrollStateChanged(
-                recyclerView: RecyclerView,
-                newState: Int
-            ) {
-                super.onScrollStateChanged(recyclerView, newState)
-                if (newState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    //get the recyclerview position which is completely visible and first
-                    val positionView = (videoRecycler!!.getLayoutManager() as LinearLayoutManager).findFirstCompletelyVisibleItemPosition()
-                    var oldFocusedLayout = (videoRecycler!!.getLayoutManager() as LinearLayoutManager).findViewByPosition(
-                            positionView
-                        )
-                    Log.i("VISISBLE", positionView.toString() + "")
-                    if (positionView >= 0) {
-                        if (oldFocusedLayout != null) {
-                            //Stop the previous video playback after new scroll
-                         //   oldFocusedLayout.findViewById(R.id.itemVideo).stopPlayback()
-                        }
-                        var currentFocusedLayout =
-                            (videoRecycler!!.getLayoutManager() as LinearLayoutManager).findViewByPosition(
-                                positionView
-                            )
-                        //to play video of selected recylerview, videosData is an array-list which is send to recyclerview adapter to fill the view. Here we getting that specific video which is displayed through recyclerview.
-                      //  (VideoAdapter.get(positionView))
-                        oldFocusedLayout = currentFocusedLayout
-                    }
-                }
-            }
-        })
-        
-    }
-
-    override fun onVideoItemClick(
-        pos: Int?,
-        videoCard: CardView,
-       // linear: LinearLayout,
-        video: VideoView,
-        title: TextView,
-        subTitle: TextView
-    ) {
+    override fun onVideoItemClick( pos: Int?,
+                                   videoCard: CardView,
+                                   video: VideoView,
+                                   title: TextView,
+                                   subTitle: TextView) {
 
         val intent = Intent(this, VideoDetailsActivity::class.java)
-        intent.putExtra("videoObject", videomodal?.get(pos!!))
+        intent.putExtra("videoTitle", videomodal?.get(pos!!)!!.title.toString())
+        intent.putExtra("videoSubTitle", videomodal?.get(pos!!)!!.subtitle.toString())
+        intent.putExtra("videoUrl", videomodal?.get(pos!!)!!.videoURL.toString())
 
 
 
         val p1 = Pair.create(videoCard as View, "videoCardTh")
-
-      //  val p2 = Pair.create(linear as View, "linearTh")
-
         val p3 = Pair.create(video as View, "videoTh")
-
         val p4 = Pair.create(title as View, "titleTh")
-
         val p5 = Pair.create(subTitle as View, "subTitleTh")
-
         val optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(this, p1, p3, p4, p5)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
@@ -134,8 +85,6 @@ class MainActivity : AppCompatActivity() , VideoCallback {
         }
         else
             startActivity(intent);
-
-
     }
     }
 
